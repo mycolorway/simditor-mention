@@ -1,0 +1,22 @@
+{
+  "name": "simditor-mention",
+  "version": "1.0.0",
+  "description": "A Mention plugin for Simditor",
+  "main": "src/simditor-mention.coffee",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mycolorway/simditor-mention.git"
+  },
+  "author": "CJ Ting",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mycolorway/simditor-mention/issues"
+  },
+  "homepage": "https://github.com/mycolorway/simditor-mention",
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-coffee": "~0.10.1",
+    "grunt-contrib-sass": "^0.8.0"
+  }
+}

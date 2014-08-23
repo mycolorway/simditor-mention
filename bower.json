@@ -1,0 +1,28 @@
+{
+  "name": "simditor-mention",
+  "version": "1.0.0",
+  "homepage": "https://github.com/mycolorway/simditor-mention",
+  "authors": [
+    "CJ Ting <fatelovely1128@gmail.com"
+  ],
+  "description": "a Mention plugin for Simditor",
+  "main": "lib/simditor-mention.js",
+  "keywords": [
+    "simditor",
+    "mention"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "vendor",
+    "Gemfile",
+    "Gemfile.lock",
+    "Gruntfile.coffee",
+    "package.json"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.0",
+    "simditor": "~1.0.0"
+  }
+}

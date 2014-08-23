@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Simditor</title>
+	<meta name="viewport" content="width=device-width">
+
+	<link media="all" rel="stylesheet" type="text/css" href="vendor/bower/fontawesome/css/font-awesome.min.css" />
+	<link media="all" rel="stylesheet" type="text/css" href="vendor/bower/simditor/styles/simditor.css" />
+	<link rel="stylesheet" type="text/css" href="styles/simditor-mention.css" />
+
+	<script type="text/javascript" src="vendor/bower/jquery/dist/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="wrapper">
+	<section id="page-demo">
+		<textarea id="txt-content" data-autosave="editor-content" autofocus></textarea>
+	</section>
+
+	<script type="text/javascript" src="vendor/bower/simditor/lib/simditor-all.js"></script>
+	<script type="text/javascript" src="lib/simditor-mention.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			var editor = new Simditor({
+				textarea: $('#txt-content'),
+				placeholder: '这里输入文字...',
+				pasteImage: true,
+				toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent'],
+				defaultImage: 'assets/images/image.png',
+				upload: location.search === '?upload' ? {
+					url: '/upload'
+				} : false,
+				mention: true,
+				mentionMembers:[
+				  {
+				    id:1,
+				    name:"春雨",
+				    pinyin:"chunyu",
+				    abbr:"cy",
+				  },
+				  {
+				    id:2,
+				    name:"夏荷",
+				    pinyin:"xiahe",
+				    abbr:"xh",
+				  },
+				  {
+				    id:3,
+				    name:"秋叶",
+				    pinyin:"qiuye",
+				    abbr:"qy",
+				  },
+				  {
+				    id:4,
+				    name:"冬雪",
+				    pinyin:"dongxue",
+				    abbr:"dx",
+				  },
+				],
+				mentionUrlGenerator:function(id){
+					return "http://www.example.com"+"/members/"+id
+				}
+			});
+		});
+	</script>
+
+</div>
+
+</body>
+</html>
+
