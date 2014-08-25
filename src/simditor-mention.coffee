@@ -13,7 +13,7 @@ class Mention extends Plugin
     @items = []
     return unless @opts.mention
     @opts.mention = $.extend {items:[],url:''},@opts.mention
-    throw new Error "Must provide items or source url" if @opts.mention.items.length == 0 and @opts.mention.url == ""
+    throw new Error "Must provide items or source url" if !$.isArray(@opts.mention.items) and @opts.mention.url == ""
 
     if @opts.mention.items.length > 0
       @items = @opts.mention.items
@@ -144,16 +144,15 @@ class Mention extends Plugin
     ''').appendTo @editor.el
 
     $itemsEl = @popoverEl.find '.items'
-    for item,index in @items
+    for item in @items
       $itemEl = $("""
         <a class="item" href="javascript:;"
-          data-index="#{ index }"
           data-name="#{ item.name }"
           data-pinyin="#{ item.pinyin ? "" }"
           data-abbr="#{ item.abbr ? "" }" >
           <span>#{ item.name }</span>
         </a>
-      """).appendTo $itemsEl
+      """).appendTo($itemsEl).data 'item',item
 
     @popoverEl.on 'mouseenter', '.item', (e)->
       $(@).addClass 'selected'
@@ -188,20 +187,20 @@ class Mention extends Plugin
 
   selectItem: ->
 
-    selectedItem = @popoverEl.find '.item.selected'
-    return unless selectedItem.length > 0
+    $selectedItem = @popoverEl.find '.item.selected'
+    return unless $selectedItem.length > 0
+    data = $selectedItem.data 'item'
+    href = data.url || "javascript:;"
 
     $itemLink = $('<a/>',{
         'class':'simditor-mention'
-        text: '@' + selectedItem.attr('data-name')
-        href: "javascript:;"
+        text: '@' + $selectedItem.attr('data-name')
+        href: href
         'data-mention': true
     })
 
     @target.replaceWith $itemLink
-    object = @items[selectedItem.attr('data-index')]
-    object["el"] = $itemLink[0]
-    $(@editor).trigger "mention",object
+    $(@editor).trigger "mention",[$itemLink,data]
 
     if @target.hasClass 'edit'
       @editor.selection.setRangeAfter $itemLink

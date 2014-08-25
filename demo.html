@@ -39,6 +39,7 @@
 					    name:"春雨",
 					    pinyin:"chunyu",
 					    abbr:"cy",
+					    url:"http://www.example.com"
 					  },
 					  {
 					    id:2,
@@ -62,10 +63,9 @@
 				},
 			});
 
-			$(editor).on("mention",function(e,data){
-				$(data.el).attr('href',"http://www.example.com/members"+data.id);
+			$(editor).on("mention",function(e,el,data){
 				color = ( data.id%2==0? 'blue' : 'red' )
-				$(data.el).css('color',color);
+				$(el).css('color',color);
 			});
 
 		});

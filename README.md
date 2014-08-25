@@ -34,6 +34,7 @@ simditor-mention
           name:"春雨",
           pinyin:"chunyu",
           abbr:"cy",
+          url:"http://www.example.com"
         },
         {
           id:2,
@@ -73,11 +74,12 @@ simditor-mention
     name:'春雨' // (必要),a链接中的文本,同时也用来匹配
     pinyin:'chunyu' // (可选),用来匹配
     abbr:'cy' // (可选),用来匹配
+    url:'' //(可选),生成a标签的默认url,如果不提供则为'javascript:;'
     ...
   }
   ```
 
-- 如果item被@,simditor对象会触发`mention`事件,附带相应的item对象及对应的a标签作为参数.
+- 如果item被@,simditor对象会触发`mention`事件,附带对应的a标签及相应的item对象作为参数.
 
 - 具体使用请参考demo.html
 
