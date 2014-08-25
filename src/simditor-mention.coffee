@@ -2,37 +2,33 @@ class Mention extends Plugin
 
   opts:
     mention: false
-    mentionMembers: []
-    mentionSource: ""
-    mentionUrlGenerator:null
-
-  members:null
 
   active: false
-
 
   constructor: (args...) ->
     super args...
     @editor = @widget
 
   _init: ->
+    @items = []
     return unless @opts.mention
-    throw new Error "Must provide items or items source url" if @opts.mentionMembers.length == 0 and @opts.mentionSource.length == 0
+    @opts.mention = $.extend {items:[],url:''},@opts.mention
+    throw new Error "Must provide items or source url" if @opts.mention.items.length == 0 and @opts.mention.url == ""
 
-    if @opts.mentionMembers.length > 0
-      @members = @opts.mentionMembers
+    if @opts.mention.items.length > 0
+      @items = @opts.mention.items
       @_renderPopover()
     else
-      @getMembers()
+      @getItems()
 
     @_bind()
 
-  getMembers: ->
+  getItems: ->
     $.ajax
       type: 'get'
-      url: @opts.mentionSource
+      url: @opts.mention.url
     .done (result)=>
-      @members = result
+      @items = result
       @_renderPopover()
 
   _bind: ->
@@ -95,9 +91,10 @@ class Mention extends Plugin
 
       $target = $('<span class="simditor-mention edit" />')
         .append($link.contents())
+
       $link.replaceWith $target
+
       @show $target
-      # @filterMember()
       $textNode = $target.contents().eq(0)
       range = document.createRange()
       range.selectNodeContents $textNode[0]
@@ -108,8 +105,6 @@ class Mention extends Plugin
     @editor.wrapper.on 'mousedown.simditor-mention', (e)=>
       return if $(e.target).closest('.simditor-mention-popover', @editor.wrapper).length
       @hide()
-
-
 
 
   show: ($target)->
@@ -124,13 +119,13 @@ class Mention extends Plugin
 
     @editor.selection.setRangeAtEndOf @target, range
 
-    @popoverEl.find('.member:first')
+    @popoverEl.find('.item:first')
       .addClass 'selected'
-      .siblings '.member'
+      .siblings '.item'
       .removeClass 'selected'
 
     @popoverEl.show()
-    @popoverEl.find('.member').show()
+    @popoverEl.find('.item').show()
     @refresh()
 
   refresh: ->
@@ -144,30 +139,31 @@ class Mention extends Plugin
   _renderPopover: ->
     @popoverEl = $('''
       <div class='simditor-mention-popover'>
-        <div class='members'></div>
+        <div class='items'></div>
       </div>
     ''').appendTo @editor.el
 
-    $membersEl = @popoverEl.find '.members'
-    for member in @members
-      $memberEl = $("""
-        <a class="member" href="javascript:;"
-          data-id="#{ member.id }"
-          data-name="#{ member.name }"
-          data-pinyin="#{ member.pinyin ? "" }"
-          data-abbr="#{ member.abbr ? "" }" >
-          <span>#{ member.name }</span>
+    $itemsEl = @popoverEl.find '.items'
+    for item,index in @items
+      $itemEl = $("""
+        <a class="item" href="javascript:;"
+          data-index="#{ index }"
+          data-name="#{ item.name }"
+          data-pinyin="#{ item.pinyin ? "" }"
+          data-abbr="#{ item.abbr ? "" }" >
+          <span>#{ item.name }</span>
         </a>
-      """).appendTo $membersEl
-    @popoverEl.on 'mouseenter', '.member', (e)->
+      """).appendTo $itemsEl
+
+    @popoverEl.on 'mouseenter', '.item', (e)->
       $(@).addClass 'selected'
-        .siblings '.member'
+        .siblings '.item'
         .removeClass 'selected'
-    @popoverEl.on 'mousedown','.member', (e)=>
-      @selectMember()
+    @popoverEl.on 'mousedown','.item', (e)=>
+      @selectItem()
       false
 
-    $membersEl.on 'mousewheel', (e,delta)->
+    $itemsEl.on 'mousewheel', (e,delta)->
       $(@).scrollTop $(@).scrollTop() - 10*delta
       false
 
@@ -184,49 +180,48 @@ class Mention extends Plugin
       @target = null
 
     @popoverEl.hide()
-    .find '.member'
+    .find '.item'
     .removeClass 'selected'
     @active = false
     null
 
 
-  selectMember: ->
+  selectItem: ->
 
-    selectedMember = @popoverEl.find '.member.selected'
-    return unless selectedMember.length > 0
-    if @opts.mentionUrlGenerator
-      url = @opts.mentionUrlGenerator(selectedMember.attr('data-id'))
-    else
-      url = "javascript:;"
-    $memberLink = $('<a/>',{
+    selectedItem = @popoverEl.find '.item.selected'
+    return unless selectedItem.length > 0
+
+    $itemLink = $('<a/>',{
         'class':'simditor-mention'
-        'data-id':selectedMember.attr('data-id')
-        text: '@' + selectedMember.attr('data-name')
-        href: url
+        text: '@' + selectedItem.attr('data-name')
+        href: "javascript:;"
         'data-mention': true
     })
 
-    @target.replaceWith $memberLink
+    @target.replaceWith $itemLink
+    object = @items[selectedItem.attr('data-index')]
+    object["el"] = $itemLink[0]
+    $(@editor).trigger "mention",object
 
     if @target.hasClass 'edit'
-      @editor.selection.setRangeAfter $memberLink
+      @editor.selection.setRangeAfter $itemLink
     else
       spaceNode = document.createTextNode '\u00A0'
-      $memberLink.after spaceNode
+      $itemLink.after spaceNode
       range = document.createRange()
       @editor.selection.setRangeAtEndOf spaceNode, range
 
     @hide()
 
-  filterMember: ->
+  filterItem: ->
     val = @target.text().toLowerCase().substr(1).replace /'/g, ''
     try
       re = new RegExp val, 'i'
     catch e
       re = new RegExp '','i'
 
-    $memberEls = @popoverEl.find '.member'
-    results = $memberEls.hide().removeClass('selected').filter (i)->
+    $itemEls = @popoverEl.find '.item'
+    results = $itemEls.hide().removeClass('selected').filter (i)->
       $el = $(@)
       str = [$el.data('name'),$el.data('pinyin'),$el.data('abbr')].join " "
       return re.test str
@@ -251,32 +246,32 @@ class Mention extends Plugin
     #up and down arrow
     else if e.which == 38 or e.which == 40
 
-      selectedMember = @popoverEl.find '.member.selected'
-      if selectedMember.length < 1
-        @popoverEl.find '.member:first' .addClass 'selected'
+      selectedItem = @popoverEl.find '.item.selected'
+      if selectedItem.length < 1
+        @popoverEl.find '.item:first' .addClass 'selected'
         return false
 
-      memberEl = selectedMember[if e.which == 38 then 'prev' else 'next']('.member:visible')
-      if memberEl.length > 0
-        selectedMember.removeClass 'selected'
-        memberEl.addClass 'selected'
+      itemEl = selectedItem[if e.which == 38 then 'prev' else 'next']('.item:visible')
+      if itemEl.length > 0
+        selectedItem.removeClass 'selected'
+        itemEl.addClass 'selected'
 
-        parentEl = memberEl.parent()
-        position = memberEl.position()
-        parentH = parentEl.height()
-        memberH = memberEl.outerHeight()
+        parentEl = itemEl.parent()
+        position = itemEl.position()
+        parentH = itemEl.height()
+        itemH = itemEl.outerHeight()
 
         if position.top < 0
-          parentEl.scrollTop(memberH * memberEl.prevAll('.member').length)
-        else if position.top > parentH - memberH
-          parentEl.scrollTop(memberH * memberEl.prevAll('.member').length - parentH + memberH )
+          parentEl.scrollTop(itemH * itemEl.prevAll('.item').length)
+        else if position.top > parentH - itemH
+          parentEl.scrollTop(itemH * itemEl.prevAll('.item').length - parentH + itemH )
       return false
 
-    #enter or tab to select member
+    #enter or tab to select item
     else if e.which == 13 or e.which == 9
-      selectedMember = @popoverEl.find '.member.selected'
-      if selectedMember.length > 0
-        @selectMember()
+      selectedItem = @popoverEl.find '.item.selected'
+      if selectedItem.length > 0
+        @selectItem()
         return false
       else
         node = document.createTextNode @target.text()
@@ -298,7 +293,7 @@ class Mention extends Plugin
 
   _onKeyUp: (e)->
     return if !@active or $.inArray(e.which, [9,16,50,27,37,38,39,40,32]) > -1
-    @filterMember()
+    @filterItem()
     @refresh()
 
 Simditor.connect Mention

@@ -6,13 +6,13 @@
   padding:0;
   background: #fff;
 
-  .members {
+  .items {
     max-height: 270px;
     margin: 5px 0;
     overflow: hidden;
     position: relative;
 
-    .member {
+    .item {
       display: block;
       padding:5px 10px;
       min-width:100px;
@@ -27,11 +27,6 @@
         clear: both;
         height:0;
         visibility: hidden;
-      }
-
-      .avatar {
-        float: left; display: block;
-        width:20px; height:20px; margin-right:5px;
       }
 
       span {

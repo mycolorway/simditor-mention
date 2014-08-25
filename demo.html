@@ -32,37 +32,42 @@
 				upload: location.search === '?upload' ? {
 					url: '/upload'
 				} : false,
-				mention: true,
-				mentionMembers:[
-				  {
-				    id:1,
-				    name:"春雨",
-				    pinyin:"chunyu",
-				    abbr:"cy",
-				  },
-				  {
-				    id:2,
-				    name:"夏荷",
-				    pinyin:"xiahe",
-				    abbr:"xh",
-				  },
-				  {
-				    id:3,
-				    name:"秋叶",
-				    pinyin:"qiuye",
-				    abbr:"qy",
-				  },
-				  {
-				    id:4,
-				    name:"冬雪",
-				    pinyin:"dongxue",
-				    abbr:"dx",
-				  },
-				],
-				mentionUrlGenerator:function(id){
-					return "http://www.example.com"+"/members/"+id
-				}
+				mention:{
+					items:[
+					  {
+					    id:1,
+					    name:"春雨",
+					    pinyin:"chunyu",
+					    abbr:"cy",
+					  },
+					  {
+					    id:2,
+					    name:"夏荷",
+					    pinyin:"xiahe",
+					    abbr:"xh",
+					  },
+					  {
+					    id:3,
+					    name:"秋叶",
+					    pinyin:"qiuye",
+					    abbr:"qy",
+					  },
+					  {
+					    id:4,
+					    name:"冬雪",
+					    pinyin:"dongxue",
+					    abbr:"dx",
+					  },
+					],
+				},
 			});
+
+			$(editor).on("mention",function(e,data){
+				$(data.el).attr('href',"http://www.example.com/members"+data.id);
+				color = ( data.id%2==0? 'blue' : 'red' )
+				$(data.el).css('color',color);
+			});
+
 		});
 	</script>
 
