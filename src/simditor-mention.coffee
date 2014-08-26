@@ -1,5 +1,7 @@
 class Mention extends Plugin
 
+  @className: 'Mention'
+
   opts:
     mention: false
 
@@ -10,10 +12,24 @@ class Mention extends Plugin
     @editor = @widget
 
   _init: ->
-    @items = []
     return unless @opts.mention
-    @opts.mention = $.extend {items:[],url:''},@opts.mention
+    @opts.mention = $.extend {
+        items:[]
+        url:''
+        nameKey:"name"
+        pinyinKey:"pinyin"
+        abbrKey:"abbr"
+        itemRenderer:null
+      },
+      @opts.mention
     throw new Error "Must provide items or source url" if !$.isArray(@opts.mention.items) and @opts.mention.url == ""
+
+    @items = []
+
+    if @editor.formatter._allowedAttributes['a']
+      @editor.formatter._allowedAttributes['a'].push 'data-mention'
+    else
+      @editor.formatter._allowedAttributes['a'] = ['data-mention']
 
     if @opts.mention.items.length > 0
       @items = @opts.mention.items
@@ -145,14 +161,23 @@ class Mention extends Plugin
 
     $itemsEl = @popoverEl.find '.items'
     for item in @items
+      name = item[@opts.mention.nameKey]
+      pinyin = item[@opts.mention.pinyinKey]
+      abbr = item[@opts.mention.abbrKey]
+
       $itemEl = $("""
         <a class="item" href="javascript:;"
-          data-name="#{ item.name }"
-          data-pinyin="#{ item.pinyin ? "" }"
-          data-abbr="#{ item.abbr ? "" }" >
-          <span>#{ item.name }</span>
+          data-name="#{ name }"
+          data-pinyin="#{ pinyin }"
+          data-abbr="#{ abbr }">
+          <span>#{ name }</span>
         </a>
-      """).appendTo($itemsEl).data 'item',item
+      """)
+
+      if @opts.mention.itemRenderer
+        $itemEl = @opts.mention.itemRenderer($itemEl,item)
+
+      $itemEl.appendTo($itemsEl).data 'item',item
 
     @popoverEl.on 'mouseenter', '.item', (e)->
       $(@).addClass 'selected'

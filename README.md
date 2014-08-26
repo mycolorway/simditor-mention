@@ -21,6 +21,11 @@ simditor-mention
   	mention:{
       items:[{}...] //item数组
       url:"" //获取item数组的url,与items选项二选一
+      nameKye:"" //(可选,默认为name),item中用来提供名称的键
+      pinyinKey:"" //(可选,默认为pinyin),item中用来提供拼音的键
+      abbrKey:"" //(可选,默认为abbr),item中用来提供缩写的键
+      //名称,拼音以及缩写将会用来匹配
+      itemRenderer:null //(可选),对弹出框的item进行自定义,例如添加img元素
     },
   })
 
@@ -80,6 +85,8 @@ simditor-mention
   ```
 
 - 如果item被@,simditor对象会触发`mention`事件,附带对应的a标签及相应的item对象作为参数.
+
+- 对于popover中的item,可以传入参数itemRenderer进行定制
 
 - 具体使用请参考demo.html
 
