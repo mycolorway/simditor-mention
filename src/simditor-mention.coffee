@@ -226,6 +226,7 @@ class Mention extends Plugin
 
     @target.replaceWith $itemLink
     $(@editor).trigger "mention",[$itemLink,data]
+    @editor.textarea.trigger "mention",[$itemLink,data]
 
     if @target.hasClass 'edit'
       @editor.selection.setRangeAfter $itemLink
