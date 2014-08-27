@@ -20,6 +20,7 @@ class Mention extends Plugin
         pinyinKey:"pinyin"
         abbrKey:"abbr"
         itemRenderer:null
+        linkRenderer:null
       },
       @opts.mention
     throw new Error "Must provide items or source url" if !$.isArray(@opts.mention.items) and @opts.mention.url == ""
@@ -226,7 +227,8 @@ class Mention extends Plugin
 
     @target.replaceWith $itemLink
     $(@editor).trigger "mention",[$itemLink,data]
-    @editor.textarea.trigger "mention",[$itemLink,data]
+    if @opts.mention.linkRenderer
+      @opts.mention.linkRenderer($itemLink,data)
 
     if @target.hasClass 'edit'
       @editor.selection.setRangeAfter $itemLink

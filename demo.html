@@ -64,6 +64,9 @@
 						$span = $('span',$itemEl)
 						$('<img>').insertBefore($span)
 						return $itemEl
+					},
+					linkRenderer:function($linkEl,data){
+						$linkEl.attr('href',"www.example.com/"+data.id);
 					}
 				},
 			});
