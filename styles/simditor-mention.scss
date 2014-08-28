@@ -13,6 +13,8 @@
     position: relative;
 
     .item {
+      box-sizing: border-box;
+      height: 30px;
       display: block;
       padding:5px 10px;
       min-width:100px;

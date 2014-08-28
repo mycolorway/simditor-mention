@@ -226,7 +226,7 @@ class Mention extends Plugin
     })
 
     @target.replaceWith $itemLink
-    $(@editor).trigger "mention",[$itemLink,data]
+    @editor.trigger "mention",[$itemLink,data]
     if @opts.mention.linkRenderer
       @opts.mention.linkRenderer($itemLink,data)
 
@@ -278,20 +278,24 @@ class Mention extends Plugin
         @popoverEl.find '.item:first' .addClass 'selected'
         return false
 
-      itemEl = selectedItem[if e.which == 38 then 'prev' else 'next']('.item:visible')
-      if itemEl.length > 0
-        selectedItem.removeClass 'selected'
-        itemEl.addClass 'selected'
+      itemEl = selectedItem[if e.which == 38 then 'prevAll' else 'nextAll']('.item:visible').first()
 
-        parentEl = itemEl.parent()
-        position = itemEl.position()
-        parentH = itemEl.height()
-        itemH = itemEl.outerHeight()
+      if itemEl.length < 1
+        return false
 
-        if position.top < 0
-          parentEl.scrollTop(itemH * itemEl.prevAll('.item').length)
-        else if position.top > parentH - itemH
-          parentEl.scrollTop(itemH * itemEl.prevAll('.item').length - parentH + itemH )
+      selectedItem.removeClass 'selected'
+      itemEl.addClass 'selected'
+
+      parentEl = itemEl.parent()
+      parentH = parentEl.height()
+
+      position = itemEl.position()
+      itemH = itemEl.outerHeight()
+
+      if position.top >= parentH
+        parentEl.scrollTop( parentEl.scrollTop()+itemH )
+      if position.top < 0
+        parentEl.scrollTop( parentEl.scrollTop()-itemH )
       return false
 
     #enter or tab to select item
