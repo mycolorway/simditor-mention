@@ -292,10 +292,10 @@ class Mention extends Plugin
       position = itemEl.position()
       itemH = itemEl.outerHeight()
 
-      if position.top >= parentH
-        parentEl.scrollTop( parentEl.scrollTop()+itemH )
+      if position.top > parentH - itemH
+        parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length - parentH + itemH )
       if position.top < 0
-        parentEl.scrollTop( parentEl.scrollTop()-itemH )
+        parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length )
       return false
 
     #enter or tab to select item
