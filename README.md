@@ -1,7 +1,7 @@
 simditor-mention
 =================
 
-[Simditor](http://simditor.tower.im/) 的官方扩展，可以轻松的@他人.
+[Simditor](http://simditor.tower.im/) 的@人扩展
 
 ## 如何使用
 
