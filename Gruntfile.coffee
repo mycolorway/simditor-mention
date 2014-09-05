@@ -10,6 +10,9 @@ module.exports = (grunt) ->
           'lib/simditor-mention.js': 'src/simditor-mention.coffee'
     sass:
       mention:
+        options:
+          style: 'expanded'
+          bundleExec: true
         files:
           'styles/simditor-mention.css': 'styles/simditor-mention.scss'
     watch:

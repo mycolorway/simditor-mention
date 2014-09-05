@@ -4,33 +4,42 @@
   z-index: 999;
   border: 1px solid #ccc;
   padding: 0;
-  background: #fff; }
-  .simditor-mention-popover .items {
-    max-height: 270px;
-    margin: 5px 0;
-    overflow: hidden;
-    position: relative; }
-    .simditor-mention-popover .items .item {
-      display: block;
-      padding: 5px 10px;
-      min-width: 100px;
-      line-height: 20px;
-      color: #333;
-      font-size: 14px; }
-      .simditor-mention-popover .items .item:before, .simditor-mention-popover .items .item:after {
-        display: table;
-        content: ""; }
-      .simditor-mention-popover .items .item:after {
-        clear: both;
-        height: 0;
-        visibility: hidden; }
-      .simditor-mention-popover .items .item span {
-        float: left;
-        display: block;
-        max-width: 160px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis; }
-      .simditor-mention-popover .items .item.selected {
-        background: #4298ba;
-        color: #fff; }
+  background: #fff;
+}
+.simditor-mention-popover .items {
+  max-height: 270px;
+  margin: 5px 0;
+  overflow: hidden;
+  position: relative;
+}
+.simditor-mention-popover .items .item {
+  display: block;
+  padding: 5px 10px;
+  min-width: 100px;
+  line-height: 20px;
+  color: #333;
+  font-size: 14px;
+}
+.simditor-mention-popover .items .item:before, .simditor-mention-popover .items .item:after {
+  display: table;
+  content: "";
+}
+.simditor-mention-popover .items .item:after {
+  clear: both;
+  height: 0;
+  visibility: hidden;
+}
+.simditor-mention-popover .items .item span {
+  float: left;
+  display: block;
+  max-width: 160px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.simditor-mention-popover .items .item.selected {
+  background: #4298ba;
+  color: #fff;
+}
+
+/*# sourceMappingURL=simditor-mention.css.map */
