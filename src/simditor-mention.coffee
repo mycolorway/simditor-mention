@@ -168,12 +168,14 @@ class Mention extends Plugin
 
       $itemEl = $("""
         <a class="item" href="javascript:;"
-          data-name="#{ name }"
           data-pinyin="#{ pinyin }"
           data-abbr="#{ abbr }">
-          <span>#{ name }</span>
+          <span></span>
         </a>
       """)
+
+      $itemEl.attr("data-name", name)
+        .find("span").text(name)
 
       if @opts.mention.itemRenderer
         $itemEl = @opts.mention.itemRenderer($itemEl,item)
