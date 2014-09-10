@@ -8,6 +8,7 @@ module.exports = (grunt) ->
       mention:
         files:
           'lib/simditor-mention.js': 'src/simditor-mention.coffee'
+          'vendor/bower/simple-util/lib/util.js': 'vendor/bower/simple-util/src/util.coffee'
     sass:
       mention:
         options:
