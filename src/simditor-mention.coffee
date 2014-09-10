@@ -162,7 +162,7 @@ class Mention extends Plugin
 
     $itemsEl = @popoverEl.find '.items'
     for item in @items
-      name = item[@opts.mention.nameKey]
+      name = simple.encodeHtml(item[@opts.mention.nameKey])
       pinyin = item[@opts.mention.pinyinKey]
       abbr = item[@opts.mention.abbrKey]
 
