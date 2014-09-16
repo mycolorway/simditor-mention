@@ -303,7 +303,7 @@ class Mention extends Plugin
     #enter or tab to select item
     else if e.which == 13 or e.which == 9
       selectedItem = @popoverEl.find '.item.selected'
-      if selectedItem.length > 0
+      if selectedItem.length
         @selectItem()
         return false
       else
@@ -318,10 +318,15 @@ class Mention extends Plugin
       @editor.selection.setRangeAtEndOf node
 
     else if e.which == 32
-      node = document.createTextNode @target.text() + '\u00A0'
-      @target.before(node).remove()
-      @hide()
-      @editor.selection.setRangeAtEndOf node
+      text = @target.text()
+      selectedItem = @popoverEl.find '.item.selected'
+      if selectedItem.length and (text.substr(1) is selectedItem.text().trim())
+        @selectItem()
+      else
+        node = document.createTextNode text + '\u00A0'
+        @target.before(node).remove()
+        @hide()
+        @editor.selection.setRangeAtEndOf node
       return false
 
   _onKeyUp: (e)->
