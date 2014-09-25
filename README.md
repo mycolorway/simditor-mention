@@ -21,7 +21,7 @@ simditor-mention
   	mention:{
       items:[{}...] //item数组
       url:"" //获取item数组的url,与items选项二选一
-      nameKye:"" //(可选,默认为name),item中用来提供名称的键
+      nameKey:"" //(可选,默认为name),item中用来提供名称的键
       pinyinKey:"" //(可选,默认为pinyin),item中用来提供拼音的键
       abbrKey:"" //(可选,默认为abbr),item中用来提供缩写的键
       //名称,拼音以及缩写将会用来匹配
