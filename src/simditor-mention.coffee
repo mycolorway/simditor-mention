@@ -148,9 +148,10 @@ class Mention extends Plugin
   refresh: ->
     wrapperOffset = @editor.wrapper.offset()
     targetOffset = @target.offset()
-
+    top = targetOffset.top - wrapperOffset.top + @target.height() + 2
+    top = targetOffset.top - @popoverEl.height() - @target.height() if (top + @popoverEl.height()) > $(window).height()
     @popoverEl.css
-      top: targetOffset.top - wrapperOffset.top + @target.height() + 2
+      top: top
       left: targetOffset.left - wrapperOffset.left + @target.width()
 
   _renderPopover: ->
