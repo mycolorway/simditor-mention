@@ -13,16 +13,16 @@ class Mention extends Plugin
 
   _init: ->
     return unless @opts.mention
-    @opts.mention = $.extend {
-        items:[]
-        url:''
-        nameKey:"name"
-        pinyinKey:"pinyin"
-        abbrKey:"abbr"
-        itemRenderer:null
-        linkRenderer:null
-      },
-      @opts.mention
+    @opts.mention = $.extend 
+      items: []
+      url: ''
+      nameKey: "name"
+      pinyinKey: "pinyin"
+      abbrKey: "abbr"
+      itemRenderer: null
+      linkRenderer: null
+    , @opts.mention
+
     throw new Error "Must provide items or source url" if !$.isArray(@opts.mention.items) and @opts.mention.url == ""
 
     @items = []
@@ -148,9 +148,15 @@ class Mention extends Plugin
   refresh: ->
     wrapperOffset = @editor.wrapper.offset()
     targetOffset = @target.offset()
+    popoverH = @popoverEl.height()
+
+    top = targetOffset.top - wrapperOffset.top + @target.height() + 2
+
+    if targetOffset.top - $(document).scrollTop() + popoverH > $(window).height()
+      top = targetOffset.top - wrapperOffset.top - popoverH
 
     @popoverEl.css
-      top: targetOffset.top - wrapperOffset.top + @target.height() + 2
+      top: top
       left: targetOffset.left - wrapperOffset.left + @target.width()
 
   _renderPopover: ->
