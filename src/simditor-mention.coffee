@@ -1,4 +1,4 @@
-class Mention extends Plugin
+class SimditorMention extends SimpleModule
 
   @className: 'Mention'
 
@@ -7,13 +7,10 @@ class Mention extends Plugin
 
   active: false
 
-  constructor: (args...) ->
-    super args...
-    @editor = @widget
-
   _init: ->
     return unless @opts.mention
-    @opts.mention = $.extend 
+    @editor = @_module
+    @opts.mention = $.extend
       items: []
       url: ''
       nameKey: "name"
@@ -340,7 +337,7 @@ class Mention extends Plugin
     @filterItem()
     @refresh()
 
-Simditor.connect Mention
+Simditor.connect SimditorMention
 
 
 
