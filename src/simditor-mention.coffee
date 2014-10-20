@@ -77,7 +77,6 @@ class SimditorMention extends SimpleModule
       , 0
 
     @editor.on 'keypress', (e)=>
-      console.log e.which
       return unless e.which is 64
 
       $closestBlock = @editor.util.closestBlockEl()
