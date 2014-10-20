@@ -20,7 +20,7 @@ class SimditorMention extends SimpleModule
       linkRenderer: null
     , @opts.mention
 
-    throw new Error "Must provide items or source url" if !$.isArray(@opts.mention.items) and @opts.mention.url == ""
+    throw new Error "Must provide items or source url" if !$.isArray(@opts.mention.items) and @opts.mention.url is ""
 
     @items = []
 
@@ -63,21 +63,22 @@ class SimditorMention extends SimpleModule
 
 
     @editor.on 'keydown', (e)=>
-      return unless e.which == 229
+      return unless e.which is 229
 
       setTimeout =>
         range = @editor.selection.getRange()
         return unless range? and range.collapsed
         range = range.cloneRange()
         range.setStart range.startContainer, Math.max(range.startOffset - 1, 0)
-        if range.toString() == '@'
-          @editor.trigger $.Event('keypress'),{
+        if range.toString() is '@'
+          @editor.trigger $.Event 'keypress', {
             which: 64
           }
       , 0
 
     @editor.on 'keypress', (e)=>
-      return unless e.which == 64
+      console.log e.which
+      return unless e.which is 64
 
       $closestBlock = @editor.util.closestBlockEl()
       return if $closestBlock.is 'pre'
@@ -269,21 +270,21 @@ class SimditorMention extends SimpleModule
     return unless @active
 
     # left and right arrow
-    if e.which == 37 or e.which == 39 or e.which == 27
+    if e.which is 37 or e.which is 39 or e.which is 27
       @editor.selection.save()
       @hide()
       @editor.selection.restore()
       return false
 
     #up and down arrow
-    else if e.which == 38 or e.which == 40
+    else if e.which is 38 or e.which is 40
 
       selectedItem = @popoverEl.find '.item.selected'
       if selectedItem.length < 1
         @popoverEl.find '.item:first' .addClass 'selected'
         return false
 
-      itemEl = selectedItem[if e.which == 38 then 'prevAll' else 'nextAll']('.item:visible').first()
+      itemEl = selectedItem[if e.which is 38 then 'prevAll' else 'nextAll']('.item:visible').first()
 
       if itemEl.length < 1
         return false
@@ -304,7 +305,7 @@ class SimditorMention extends SimpleModule
       return false
 
     #enter or tab to select item
-    else if e.which == 13 or e.which == 9
+    else if e.which is 13 or e.which is 9
       selectedItem = @popoverEl.find '.item.selected'
       if selectedItem.length
         @selectItem()
@@ -314,13 +315,13 @@ class SimditorMention extends SimpleModule
         @target.before(node).remove()
         @hide()
         @editor.selection.setRangeAtEndOf node
-    else if e.which == 8 and @target.text() == '@'
+    else if e.which is 8 and @target.text() is '@'
       node = document.createTextNode '@'
       @target.replaceWith node
       @hide()
       @editor.selection.setRangeAtEndOf node
 
-    else if e.which == 32
+    else if e.which is 32
       text = @target.text()
       selectedItem = @popoverEl.find '.item.selected'
       if selectedItem.length and (text.substr(1) is selectedItem.text().trim())
