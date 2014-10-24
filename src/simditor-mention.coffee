@@ -248,7 +248,7 @@ class SimditorMention extends SimpleModule
   filterItem: ->
     val = @target.text().toLowerCase().substr(1).replace /'/g, ''
     try
-      re = new RegExp val, 'i'
+      re = new RegExp "(^|\\s)#{val}", 'i'
     catch e
       re = new RegExp '','i'
 
