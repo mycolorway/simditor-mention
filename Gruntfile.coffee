@@ -18,28 +18,29 @@ module.exports = (grunt) ->
           bare: true
         files:
           'lib/simditor-mention.js': 'src/simditor-mention.coffee'
+
+    umd:
+      all:
+        src: 'lib/simditor-mention.js'
+        template: 'umd'
+        amdModuleId: 'simditor-mention'
+        objectToExport: 'SimditorMention'
+        globalAlias: 'SimditorMention'
+        deps:
+          'default': ['$', 'Simditor']
+          amd: ['jquery', 'simditor']
+          cjs: ['jquery', 'simditor']
+          global:
+            items: ['jQuery', 'Simditor']
+            prefix: ''
+
     watch:
       styles:
         files: ['styles/*.scss']
         tasks: ['sass']
       src:
         files: ['src/*.coffee']
-        tasks: ['coffee:src']
-
-    umd:
-      all:
-        src: 'lib/simditor-mention.js'
-        template: 'umd'
-        amdModuleId: 'Simditor'
-        objectToExport: 'Simditor'
-        globalAlias: 'Simditor'
-        deps:
-          'default': ['$', 'SimpleModule']
-          amd: ['jquery', 'simple-module', 'simditor']
-          cjs: ['jquery', 'simple-module', 'simditor']
-          global:
-            items: ['jQuery', 'SimpleModule']
-            prefix: ''
+        tasks: ['coffee:src', 'umd']
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
