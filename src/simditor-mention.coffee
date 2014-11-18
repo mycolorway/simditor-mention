@@ -1,6 +1,6 @@
 class SimditorMention extends SimpleModule
 
-  @className: 'Mention'
+  @pluginName: 'Mention'
 
   opts:
     mention: false
