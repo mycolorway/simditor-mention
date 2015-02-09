@@ -25,5 +25,9 @@
   "dependencies": {
     "jquery": "2.x",
     "simditor": "2.x"
+  },
+  "devDependencies": {
+    "jasmine-jquery": "~2.0.6",
+    "bililiteRange": "2.x"
   }
 }

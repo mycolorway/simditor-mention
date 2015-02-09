@@ -18,9 +18,10 @@
   "homepage": "https://github.com/mycolorway/simditor-mention",
   "devDependencies": {
     "grunt": "0.x",
-    "grunt-contrib-watch": "0.x",
     "grunt-contrib-coffee": "0.x",
+    "grunt-contrib-jasmine": "0.x",
     "grunt-contrib-sass": "0.x",
+    "grunt-contrib-watch": "0.x",
     "grunt-umd": "2.x"
   }
 }

@@ -192,6 +192,12 @@ class SimditorMention extends SimpleModule
     @popoverEl.on 'mousedown','.item', (e)=>
       @selectItem()
       false
+    @popoverEl.on 'click','.item', (e)=>
+      $(e.currentTarget).addClass 'selected'
+        .siblings '.item'
+        .removeClass 'selected'
+      @selectItem()
+      false
 
     $itemsEl.on 'mousewheel', (e,delta)->
       $(@).scrollTop $(@).scrollTop() - 10*delta
@@ -264,6 +270,7 @@ class SimditorMention extends SimpleModule
       .addClass 'selected'
     else
       @popoverEl.hide()
+
 
   _onKeyDown: (e)->
     return unless @active
