@@ -1,8 +1,8 @@
 {
   "name": "simditor-mention",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A Mention plugin for Simditor",
-  "main": "src/simditor-mention.coffee",
+  "main": "lib/simditor-mention.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/mycolorway/simditor-mention.git"
