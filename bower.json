@@ -1,6 +1,6 @@
 {
   "name": "simditor-mention",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "homepage": "https://github.com/mycolorway/simditor-mention",
   "authors": [
     "CJ Ting <fatelovely1128@gmail.com",
@@ -24,6 +24,6 @@
   ],
   "dependencies": {
     "jquery": "2.x",
-    "simditor": "2.x"
+    "simditor": "~2.1.15"
   }
 }
