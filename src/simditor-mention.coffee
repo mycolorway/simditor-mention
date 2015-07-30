@@ -66,7 +66,7 @@ class SimditorMention extends SimpleModule
       return unless e.which is 229
 
       setTimeout =>
-        range = @editor.selection.getRange()
+        range = @editor.selection.range()
         return unless range? and range.collapsed
         range = range.cloneRange()
         range.setStart range.startContainer, Math.max(range.startOffset - 1, 0)
@@ -79,17 +79,18 @@ class SimditorMention extends SimpleModule
     @editor.on 'keypress', (e)=>
       return unless e.which is 64
 
-      $closestBlock = @editor.util.closestBlockEl()
+      $closestBlock = @editor.selection.blockNodes().last()
       return if $closestBlock.is 'pre'
 
       setTimeout =>
-        range = @editor.selection.getRange()
+        range = @editor.selection.range()
         return unless range?
 
         range = range.cloneRange()
         range.setStart range.startContainer, Math.max(range.startOffset - 2, 0)
         return if /^[A-Za-z0-9]@/.test range.toString()
         @show()
+      , 10
 
     @editor
       .on('keydown.simditor-mention', $.proxy(@_onKeyDown, this))
@@ -113,7 +114,7 @@ class SimditorMention extends SimpleModule
       range = document.createRange()
       range.selectNodeContents $textNode[0]
       range.setStart range.startContainer, 1
-      @editor.selection.selectRange range
+      @editor.selection.range range
       false
 
     @editor.wrapper.on 'mousedown.simditor-mention', (e)=>
@@ -127,7 +128,7 @@ class SimditorMention extends SimpleModule
       @target = $target
     else
       @target = $('<span class="simditor-mention" />')
-      range = @editor.selection.getRange()
+      range = @editor.selection.range()
       range.setStart range.startContainer, range.endOffset - 1
       range.surroundContents @target[0]
 
