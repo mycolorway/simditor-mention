@@ -90,7 +90,7 @@ class SimditorMention extends SimpleModule
         range.setStart range.startContainer, Math.max(range.startOffset - 2, 0)
         return if /^[A-Za-z0-9]@/.test range.toString()
         @show()
-      , 10
+      , 50
 
     @editor
       .on('keydown.simditor-mention', $.proxy(@_onKeyDown, this))
