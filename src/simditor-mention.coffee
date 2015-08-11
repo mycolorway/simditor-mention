@@ -253,7 +253,6 @@ class SimditorMention extends SimpleModule
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
       re = new RegExp '','i'
-    console.log re
 
     $itemEls = @popoverEl.find '.item'
     results = $itemEls.hide().removeClass('selected').filter (i)->
@@ -269,7 +268,6 @@ class SimditorMention extends SimpleModule
       @popoverEl.hide()
 
   _onKeyDown: (e)->
-    console.log e.which
     return unless @active
 
     # left and right arrow
