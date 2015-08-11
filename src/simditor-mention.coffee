@@ -70,7 +70,7 @@ class SimditorMention extends SimpleModule
         return unless range? and range.collapsed
         range = range.cloneRange()
         range.setStart range.startContainer, Math.max(range.startOffset - 1, 0)
-        if range.toString() is '@'
+        if range.toString() is '@' and not @active
           @editor.trigger $.Event 'keypress', {
             which: 64
           }
@@ -248,10 +248,12 @@ class SimditorMention extends SimpleModule
 
   filterItem: ->
     val = @target.text().toLowerCase().substr(1).replace /'/g, ''
+    val = val.replace String.fromCharCode(12288), ''
     try
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
       re = new RegExp '','i'
+    console.log re
 
     $itemEls = @popoverEl.find '.item'
     results = $itemEls.hide().removeClass('selected').filter (i)->
@@ -267,6 +269,7 @@ class SimditorMention extends SimpleModule
       @popoverEl.hide()
 
   _onKeyDown: (e)->
+    console.log e.which
     return unless @active
 
     # left and right arrow
@@ -315,12 +318,13 @@ class SimditorMention extends SimpleModule
         @target.before(node).remove()
         @hide()
         @editor.selection.setRangeAtEndOf node
+    # delete
     else if e.which is 8 and @target.text() is '@'
       node = document.createTextNode '@'
       @target.replaceWith node
       @hide()
       @editor.selection.setRangeAtEndOf node
-
+    # space
     else if e.which is 32
       text = @target.text()
       selectedItem = @popoverEl.find '.item.selected'
@@ -334,7 +338,7 @@ class SimditorMention extends SimpleModule
       return false
 
   _onKeyUp: (e)->
-    return if !@active or $.inArray(e.which, [9,16,50,27,37,38,39,40,32]) > -1
+    return if !@active or $.inArray(e.which, [9,16,27,37,38,39,40]) > -1 or (e.shiftKey and e.which == 50)
     @filterItem()
     @refresh()
 
