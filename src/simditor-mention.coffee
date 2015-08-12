@@ -46,7 +46,6 @@ class SimditorMention extends SimpleModule
       @_renderPopover()
 
   _bind: ->
-
     @editor.on 'decorate', (e,$el)=>
       $el.find('a[data-mention]').each (i,link)=>
         @decorate $(link)
@@ -247,7 +246,9 @@ class SimditorMention extends SimpleModule
 
   filterItem: ->
     val = @target.text().toLowerCase().substr(1).replace /'/g, ''
+    # 处理输入法占位符号 rime:12288, sougou: 160
     val = val.replace String.fromCharCode(12288), ''
+    val = val.replace String.fromCharCode(160), ''
     try
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
