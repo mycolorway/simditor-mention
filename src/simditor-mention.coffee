@@ -63,6 +63,7 @@ class SimditorMention extends SimpleModule
 
 
     @editor.on 'keydown', (e)=>
+      console.log e.which
       return unless e.which is 229
 
       setTimeout =>
@@ -84,6 +85,7 @@ class SimditorMention extends SimpleModule
 
       setTimeout =>
         range = @editor.selection.range()
+        console.log range
         return unless range?
 
         range = range.cloneRange()
@@ -123,6 +125,7 @@ class SimditorMention extends SimpleModule
 
 
   show: ($target)->
+    console.log "show"
     @active = true
     if $target
       @target = $target
@@ -206,6 +209,7 @@ class SimditorMention extends SimpleModule
 
 
   hide: ->
+    console.log 'hide'
     if @target
       @target.contents().first().unwrap()
       @target = null
@@ -253,6 +257,7 @@ class SimditorMention extends SimpleModule
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
       re = new RegExp '','i'
+    console.log re
 
     $itemEls = @popoverEl.find '.item'
     results = $itemEls.hide().removeClass('selected').filter (i)->
@@ -261,11 +266,13 @@ class SimditorMention extends SimpleModule
       return re.test str
     if results.length
       @popoverEl.show()
+      @active = true
       results.show()
       .first()
       .addClass 'selected'
     else
       @popoverEl.hide()
+      @active = false
 
   _onKeyDown: (e)->
     return unless @active
