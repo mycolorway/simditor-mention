@@ -63,9 +63,7 @@ class SimditorMention extends SimpleModule
 
 
     @editor.on 'keydown', (e)=>
-      console.log e.which
       return unless e.which is 229
-
       setTimeout =>
         range = @editor.selection.range()
         return unless range? and range.collapsed
@@ -75,7 +73,7 @@ class SimditorMention extends SimpleModule
           @editor.trigger $.Event 'keypress', {
             which: 64
           }
-      , 0
+      , 50
 
     @editor.on 'keypress', (e)=>
       return unless e.which is 64
@@ -85,7 +83,6 @@ class SimditorMention extends SimpleModule
 
       setTimeout =>
         range = @editor.selection.range()
-        console.log range
         return unless range?
 
         range = range.cloneRange()
@@ -125,7 +122,6 @@ class SimditorMention extends SimpleModule
 
 
   show: ($target)->
-    console.log "show"
     @active = true
     if $target
       @target = $target
@@ -209,7 +205,6 @@ class SimditorMention extends SimpleModule
 
 
   hide: ->
-    console.log 'hide'
     if @target
       @target.contents().first().unwrap()
       @target = null
@@ -257,7 +252,6 @@ class SimditorMention extends SimpleModule
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
       re = new RegExp '','i'
-    console.log re
 
     $itemEls = @popoverEl.find '.item'
     results = $itemEls.hide().removeClass('selected').filter (i)->
@@ -324,7 +318,7 @@ class SimditorMention extends SimpleModule
         @hide()
         @editor.selection.setRangeAtEndOf node
     # delete
-    else if e.which is 8 and @target.text() is '@'
+    else if e.which is 8 and (@target.text() is '@' or @target.text() is '')
       node = document.createTextNode '@'
       @target.replaceWith node
       @hide()
