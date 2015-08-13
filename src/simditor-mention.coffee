@@ -46,7 +46,6 @@ class SimditorMention extends SimpleModule
       @_renderPopover()
 
   _bind: ->
-
     @editor.on 'decorate', (e,$el)=>
       $el.find('a[data-mention]').each (i,link)=>
         @decorate $(link)
@@ -64,7 +63,6 @@ class SimditorMention extends SimpleModule
 
     @editor.on 'keydown', (e)=>
       return unless e.which is 229
-
       setTimeout =>
         range = @editor.selection.range()
         return unless range? and range.collapsed
@@ -74,7 +72,7 @@ class SimditorMention extends SimpleModule
           @editor.trigger $.Event 'keypress', {
             which: 64
           }
-      , 0
+      , 50
 
     @editor.on 'keypress', (e)=>
       return unless e.which is 64
@@ -248,7 +246,9 @@ class SimditorMention extends SimpleModule
 
   filterItem: ->
     val = @target.text().toLowerCase().substr(1).replace /'/g, ''
+    # 处理输入法占位符号 rime:12288, sougou: 160
     val = val.replace String.fromCharCode(12288), ''
+    val = val.replace String.fromCharCode(160), ''
     try
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
@@ -261,11 +261,13 @@ class SimditorMention extends SimpleModule
       return re.test str
     if results.length
       @popoverEl.show()
+      @active = true
       results.show()
       .first()
       .addClass 'selected'
     else
       @popoverEl.hide()
+      @active = false
 
   _onKeyDown: (e)->
     return unless @active
@@ -317,7 +319,7 @@ class SimditorMention extends SimpleModule
         @hide()
         @editor.selection.setRangeAtEndOf node
     # delete
-    else if e.which is 8 and @target.text() is '@'
+    else if e.which is 8 and (@target.text() is '@' or @target.text() is '')
       node = document.createTextNode '@'
       @target.replaceWith node
       @hide()
