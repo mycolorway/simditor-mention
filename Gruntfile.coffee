@@ -61,9 +61,6 @@ module.exports = (grunt) ->
             'vendor/bower/simple-hotkeys/lib/hotkeys.js'
             'vendor/bower/simditor/lib/simditor.js'
           ]
-          helpers: [
-            'spec/mock-ajax.js'
-          ]
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
