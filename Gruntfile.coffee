@@ -3,6 +3,7 @@ module.exports = (grunt) ->
   grunt.initConfig
 
     pkg: grunt.file.readJSON 'package.json'
+    name: 'simditor-mention'
 
     sass:
       styles:
@@ -18,6 +19,9 @@ module.exports = (grunt) ->
           bare: true
         files:
           'lib/simditor-mention.js': 'src/simditor-mention.coffee'
+      spec:
+        files:
+          'spec/<%= name %>-spec.js': 'spec/<%= name %>-spec.coffee'
 
     umd:
       all:
@@ -40,11 +44,32 @@ module.exports = (grunt) ->
         tasks: ['sass']
       src:
         files: ['src/*.coffee']
-        tasks: ['coffee:src', 'umd']
+        tasks: ['coffee:src', 'umd', 'jasmine']
+
+    jasmine:
+      test:
+        src: ['lib/**/*.js']
+        options:
+          outfile: 'spec/index.html'
+          styles: 'styles/<%= name %>.css'
+          specs: 'spec/<%= name %>-spec.js'
+          vendor: [
+            'vendor/bower/jquery/dist/jquery.min.js'
+            'vendor/bower/jasmine-jquery/lib/jasmine-jquery.js'
+            'vendor/bower/simple-module/lib/module.js'
+            'vendor/bower/simple-uploader/lib/uploader.js'
+            'vendor/bower/simple-hotkeys/lib/hotkeys.js'
+            'vendor/bower/simditor/lib/simditor.js'
+          ]
+          helpers: [
+            'spec/mock-ajax.js'
+          ]
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'grunt-umd'
 
-  grunt.registerTask 'default', ['sass', 'coffee', 'umd', 'watch']
+  grunt.registerTask 'default', ['sass', 'coffee', 'umd', 'jasmine', 'watch']
+  grunt.registerTask 'test', ['sass', 'coffee', 'umd', 'jasmine']
