@@ -20,8 +20,11 @@ module.exports = (grunt) ->
         files:
           'lib/simditor-mention.js': 'src/simditor-mention.coffee'
       spec:
-        files:
-          'spec/<%= name %>-spec.js': 'spec/<%= name %>-spec.coffee'
+        expand: true
+        flatten: true
+        src: ['spec/src/*.coffee']
+        dest: 'spec/'
+        ext: '.js'
 
     umd:
       all:
@@ -52,7 +55,7 @@ module.exports = (grunt) ->
         options:
           outfile: 'spec/index.html'
           styles: 'styles/<%= name %>.css'
-          specs: 'spec/<%= name %>-spec.js'
+          specs: 'spec/*.js'
           vendor: [
             'vendor/bower/jquery/dist/jquery.min.js'
             'vendor/bower/jasmine-jquery/lib/jasmine-jquery.js'
@@ -60,6 +63,9 @@ module.exports = (grunt) ->
             'vendor/bower/simple-uploader/lib/uploader.js'
             'vendor/bower/simple-hotkeys/lib/hotkeys.js'
             'vendor/bower/simditor/lib/simditor.js'
+          ]
+          helper: [
+            'spec/helper.js'
           ]
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
