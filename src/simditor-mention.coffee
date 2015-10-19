@@ -216,12 +216,10 @@ class SimditorMention extends SimpleModule
 
 
   selectItem: ->
-
     $selectedItem = @popoverEl.find '.item.selected'
     return unless $selectedItem.length > 0
     data = $selectedItem.data 'item'
     href = data.url || "javascript:;"
-
     $itemLink = $('<a/>',{
         'class':'simditor-mention'
         text: '@' + $selectedItem.attr('data-name')
