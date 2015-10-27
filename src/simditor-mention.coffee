@@ -276,6 +276,17 @@ class SimditorMention extends SimpleModule
     return false if itemEl.length < 1
     selectedItem.removeClass 'selected'
     itemEl.addClass 'selected'
+    
+    parentEl = itemEl.parent()
+    parentH = parentEl.height()
+
+    position = itemEl.position()
+    itemH = itemEl.outerHeight()
+
+    if position.top > parentH - itemH
+      parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length - parentH + itemH )
+    if position.top < 0
+      parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length )
 
 
   _onKeyDown: (e)->
