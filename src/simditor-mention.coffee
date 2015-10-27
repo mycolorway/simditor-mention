@@ -267,6 +267,17 @@ class SimditorMention extends SimpleModule
       @popoverEl.hide()
       @active = false
 
+  _changeFocus: (type)->
+    selectedItem = @popoverEl.find '.item.selected'
+    if selectedItem.length < 1
+      @popoverEl.find '.item:first' .addClass 'selected'
+      return false
+    itemEl = selectedItem[type]('.item:visible').first()
+    return false if itemEl.length < 1
+    selectedItem.removeClass 'selected'
+    itemEl.addClass 'selected'
+
+
   _onKeyDown: (e)->
     return unless @active
 
@@ -276,33 +287,12 @@ class SimditorMention extends SimpleModule
       @hide()
       @editor.selection.restore()
       return false
-
-    #up and down arrow
-    else if e.which is 38 or e.which is 40
-
-      selectedItem = @popoverEl.find '.item.selected'
-      if selectedItem.length < 1
-        @popoverEl.find '.item:first' .addClass 'selected'
-        return false
-
-      itemEl = selectedItem[if e.which is 38 then 'prevAll' else 'nextAll']('.item:visible').first()
-
-      if itemEl.length < 1
-        return false
-
-      selectedItem.removeClass 'selected'
-      itemEl.addClass 'selected'
-
-      parentEl = itemEl.parent()
-      parentH = parentEl.height()
-
-      position = itemEl.position()
-      itemH = itemEl.outerHeight()
-
-      if position.top > parentH - itemH
-        parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length - parentH + itemH )
-      if position.top < 0
-        parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length )
+    #up and down arrow, ctrl+p and ctrl+n
+    else if e.which is 38 or (e.which is 80 and e.ctrlKey)
+      @_changeFocus('prev')
+      return false
+    else if e.which is 40 or (e.which is 78 and e.ctrlKey)
+      @_changeFocus('next')
       return false
 
     #enter or tab to select item
@@ -336,7 +326,8 @@ class SimditorMention extends SimpleModule
       return false
 
   _onKeyUp: (e)->
-    return if !@active or $.inArray(e.which, [9,16,27,37,38,39,40]) > -1 or (e.shiftKey and e.which == 50)
+    # 过滤快捷键, 以免触发refresh
+    return if !@active or $.inArray(e.which, [9,16,17,27,37,38,39,40]) > -1 or (e.shiftKey and e.which == 50) or (e.ctrlKey and (e.which == 78 or e.which == 80)) 
     @filterItem()
     @refresh()
 
