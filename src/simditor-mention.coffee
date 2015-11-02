@@ -61,8 +61,9 @@ class SimditorMention extends SimpleModule
       e.result
 
 
-    @editor.on 'keydown', (e)=>
-      return unless e.which is 229
+    @editor.body.on 'input', (e)=>
+      # windows 的 firefox 下 e.which == 0, webkit 浏览器 e.which 是 undefined
+      return unless e.which is 0 or typeof e.which is 'undefined'
       setTimeout =>
         range = @editor.selection.range()
         return unless range? and range.collapsed
