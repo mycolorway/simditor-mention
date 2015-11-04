@@ -272,7 +272,7 @@ class SimditorMention extends SimpleModule
     if selectedItem.length < 1
       @popoverEl.find '.item:first' .addClass 'selected'
       return false
-    itemEl = selectedItem[type]('.item:visible').first()
+    itemEl = selectedItem[type + 'All']('.item:visible').first()
     return false if itemEl.length < 1
     selectedItem.removeClass 'selected'
     itemEl.addClass 'selected'
