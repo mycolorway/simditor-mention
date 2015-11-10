@@ -62,33 +62,15 @@ class SimditorMention extends SimpleModule
 
 
     @editor.body.on 'input', (e)=>
-      # windows 的 firefox 下 e.which == 0, webkit 浏览器 e.which 是 undefined
-      return unless e.which is 0 or typeof e.which is 'undefined'
+      $closestBlock = @editor.selection.blockNodes().last()
+      return if $closestBlock.is 'pre'
       setTimeout =>
         range = @editor.selection.range()
         return unless range? and range.collapsed
         range = range.cloneRange()
-        range.setStart range.startContainer, Math.max(range.startOffset - 1, 0)
-        if range.toString() is '@' and not @active
-          @editor.trigger $.Event 'keypress', {
-            which: 64
-          }
-      , 50
-
-    @editor.on 'keypress', (e)=>
-      return unless e.which is 64
-
-      $closestBlock = @editor.selection.blockNodes().last()
-      return if $closestBlock.is 'pre'
-
-      setTimeout =>
-        range = @editor.selection.range()
-        return unless range?
-
-        range = range.cloneRange()
         range.setStart range.startContainer, Math.max(range.startOffset - 2, 0)
-        return if /^[A-Za-z0-9]@/.test range.toString()
-        @show()
+        if range.toString().length > 0 and /^[^A-Za-z0-9]*@$/.test(range.toString())
+          @show()
       , 50
 
     @editor
