@@ -61,33 +61,16 @@ class SimditorMention extends SimpleModule
       e.result
 
 
-    @editor.on 'keydown', (e)=>
-      return unless e.which is 229
+    @editor.body.on 'input', (e)=>
+      $closestBlock = @editor.selection.blockNodes().last()
+      return if $closestBlock.is 'pre'
       setTimeout =>
         range = @editor.selection.range()
         return unless range? and range.collapsed
         range = range.cloneRange()
-        range.setStart range.startContainer, Math.max(range.startOffset - 1, 0)
-        if range.toString() is '@' and not @active
-          @editor.trigger $.Event 'keypress', {
-            which: 64
-          }
-      , 50
-
-    @editor.on 'keypress', (e)=>
-      return unless e.which is 64
-
-      $closestBlock = @editor.selection.blockNodes().last()
-      return if $closestBlock.is 'pre'
-
-      setTimeout =>
-        range = @editor.selection.range()
-        return unless range?
-
-        range = range.cloneRange()
         range.setStart range.startContainer, Math.max(range.startOffset - 2, 0)
-        return if /^[A-Za-z0-9]@/.test range.toString()
-        @show()
+        if range.toString().length > 0 and /^[^A-Za-z0-9]*@$/.test(range.toString())
+          @show()
       , 50
 
     @editor
