@@ -84,7 +84,14 @@ simditor-mention
     ...
   }
   ```
+- 动态添加at对象如下：
 
+  ```javascript
+  // 有时候我们在另外的地方new了simditor对象
+  // 在当用户发了评论，我们需要动态的将at对象添加到simditor中
+  editor.mention.items.push({"name":"moli"});
+  editor.mention._init(); 
+  ```
 - 如果item被@,simditor对象会触发`mention`事件,附带对应的a标签及相应的item对象作为参数.
 
 - 对于popover中的item,可以传入参数itemRenderer进行定制.
@@ -92,11 +99,3 @@ simditor-mention
 - 对于被@然后生成的a标签可以传入参数linkRenderer进行定制.
 
 - 具体使用请参考demo.html
-
-
-
-
-
-
-
-
