@@ -1,6 +1,6 @@
 {
   "name": "ts-simditor-mention",
-  "version": "2.1.7",
+  "version": "3.0.0",
   "description": "A Mention plugin for Simditor",
   "main": "lib/simditor-mention.js",
   "repository": {
