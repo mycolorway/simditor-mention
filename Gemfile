@@ -1,3 +1,3 @@
-source 'http://ruby.taobao.org'
+source "http://rubygems.org"
 
 gem 'sass',    '>= 3.4.0'

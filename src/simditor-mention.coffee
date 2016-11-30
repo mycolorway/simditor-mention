@@ -227,10 +227,11 @@ class SimditorMention extends SimpleModule
         'data-mention': true
     })
 
+    if @opts.mention.linkRenderer
+      $itemLink = @opts.mention.linkRenderer($itemLink,data)
+
     @target.replaceWith $itemLink
     @editor.trigger "mention",[$itemLink,data]
-    if @opts.mention.linkRenderer
-      @opts.mention.linkRenderer($itemLink,data)
 
     if @target.hasClass 'edit'
       @editor.selection.setRangeAfter $itemLink
@@ -270,7 +271,9 @@ class SimditorMention extends SimpleModule
   _changeFocus: (type)->
     selectedItem = @popoverEl.find '.item.selected'
     if selectedItem.length < 1
-      @popoverEl.find '.item:first' .addClass 'selected'
+      @popoverEl
+      .find '.item:first'
+      .addClass 'selected'
       return false
     itemEl = selectedItem[type + 'All']('.item:visible').first()
     return false if itemEl.length < 1

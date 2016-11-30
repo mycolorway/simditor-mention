@@ -1,21 +1,22 @@
 {
-  "name": "simditor-mention",
-  "version": "2.1.7",
+  "name": "ts-simditor-mention",
+  "version": "3.0.0",
   "description": "A Mention plugin for Simditor",
   "main": "lib/simditor-mention.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mycolorway/simditor-mention.git"
+    "url": "git://github.com/townsquared/simditor-mention.git"
   },
   "author": [
     "CJ Ting <fatelovely1128@gmail.com",
-    "kshift <kshift.lv@gmail.com>"
+    "kshift <kshift.lv@gmail.com>",
+    "Gaurav Mali <gaurav@townsqd.com>"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mycolorway/simditor-mention/issues"
+    "url": "https://github.com/townsquared/simditor-mention/issues"
   },
-  "homepage": "https://github.com/mycolorway/simditor-mention",
+  "homepage": "https://github.com/townsquared/simditor-mention",
   "dependencies": {
     "jquery": "2.x",
     "simditor": "2.3.x"
@@ -25,10 +26,10 @@
   },
   "devDependencies": {
     "grunt": "0.x",
-    "grunt-contrib-watch": "0.x",
     "grunt-contrib-coffee": "0.x",
+    "grunt-contrib-jasmine": "^1.0.3",
     "grunt-contrib-sass": "0.x",
-    "grunt-contrib-jasmine": "0.x",
+    "grunt-contrib-watch": "0.x",
     "grunt-umd": "2.x"
   }
 }
