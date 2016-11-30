@@ -227,10 +227,11 @@ class SimditorMention extends SimpleModule
         'data-mention': true
     })
 
+    if @opts.mention.linkRenderer
+      $itemLink = @opts.mention.linkRenderer($itemLink,data)
+
     @target.replaceWith $itemLink
     @editor.trigger "mention",[$itemLink,data]
-    if @opts.mention.linkRenderer
-      @opts.mention.linkRenderer($itemLink,data)
 
     if @target.hasClass 'edit'
       @editor.selection.setRangeAfter $itemLink
