@@ -1,3 +1,28 @@
+# Returns a function, that, as long as it continues to be invoked, will not
+# be triggered. The function will be called after it stops being called for
+# N milliseconds. If `immediate` is passed, trigger the function on the
+# leading edge, instead of the trailing.
+
+# Stolen from https://davidwalsh.name/javascript-debounce-function
+debounce = (func, wait, immediate) ->
+  timeout = undefined
+  ->
+    context = this
+    args = arguments
+
+    later = ->
+      timeout = null
+      if !immediate
+        func.apply context, args
+      return
+
+    callNow = immediate and not timeout
+    clearTimeout timeout
+    timeout = setTimeout(later, wait)
+    func.apply context, args if callNow
+    return
+
+
 class SimditorMention extends SimpleModule
 
   @pluginName: 'Mention'
@@ -32,17 +57,27 @@ class SimditorMention extends SimpleModule
     if @opts.mention.items.length > 0
       @items = @opts.mention.items
       @_renderPopover()
-    else
+    else if not @_isXHREnabled()
       @getItems()
 
     @_bind()
 
-  getItems: ->
-    $.ajax
-      type: 'get'
-      url: @opts.mention.url
+  _isXHREnabled: ->
+    @opts.mention.xhrUrl and @opts.mention.xhrHeaders and @opts.mention.xhrData
+
+  getItems: (query)->
+    options = {type: 'get', url: @opts.mention.url}
+
+    if @_isXHREnabled()
+      options.url = @opts.mention.xhrUrl
+      options.headers = @opts.mention.xhrHeaders
+      options.data = @opts.mention.xhrData
+      options.data.q = query
+
+    $.ajax options
     .done (result)=>
-      @items = result
+      formatter = @opts.mention.xhrResponseFormat
+      @items = if formatter? then formatter result else result
       @_renderPopover()
 
   _bind: ->
@@ -90,9 +125,11 @@ class SimditorMention extends SimpleModule
         @show()
       , 50
 
+    onKeyUpEvent = debounce($.proxy(@_onKeyUp, this), 400);
+
     @editor
       .on('keydown.simditor-mention', $.proxy(@_onKeyDown, this))
-      .on('keyup.simditor-mention', $.proxy(@_onKeyUp, this))
+      .on('keyup.simditor-mention', onKeyUpEvent)
 
 
     @editor.on 'blur',=>
@@ -117,8 +154,7 @@ class SimditorMention extends SimpleModule
 
     @editor.wrapper.on 'mousedown.simditor-mention', (e)=>
       return if $(e.target).closest('.simditor-mention-popover', @editor.wrapper).length
-      @hide()
-
+      @hide() if @popoverEl?
 
   show: ($target)->
     @active = true
@@ -131,6 +167,9 @@ class SimditorMention extends SimpleModule
       range.surroundContents @target[0]
 
     @editor.selection.setRangeAtEndOf @target, range
+
+    # Dynamic items need this.active and a keypress before popover gets created
+    return if not @popoverEl?
 
     @popoverEl.find('.item:first')
       .addClass 'selected'
@@ -156,7 +195,7 @@ class SimditorMention extends SimpleModule
       left: targetOffset.left - wrapperOffset.left + @target.width()
 
   _renderPopover: ->
-    @popoverEl = $('''
+    @popoverEl ?= $('''
       <div class='simditor-mention-popover'>
         <div class='items'></div>
       </div>
@@ -202,7 +241,6 @@ class SimditorMention extends SimpleModule
   undecorate: ($link)->
     $link.removeClass 'simditor-mention'
 
-
   hide: ->
     if @target
       @target.contents().first().unwrap()
@@ -213,7 +251,6 @@ class SimditorMention extends SimpleModule
     .removeClass 'selected'
     @active = false
     null
-
 
   selectItem: ->
     $selectedItem = @popoverEl.find '.item.selected'
@@ -244,20 +281,36 @@ class SimditorMention extends SimpleModule
     @hide()
 
   filterItem: ->
+    # get the text that the user has typed in
     val = @target.text().toLowerCase().substr(1).replace /'/g, ''
-    # 处理输入法占位符号 rime:12288, sougou: 160
+
+    # Trim it
     val = val.replace String.fromCharCode(12288), ''
     val = val.replace String.fromCharCode(160), ''
+
+    # Exists when items are static, or fetched dynamically 2nd or more times
+    $itemEls = @popoverEl.find '.item' if @popoverEl?
+
+    if @_isXHREnabled()
+      # Only hide items are fetched 2nd or more times
+      @popoverEl.hide() if @popoverEl?
+      return @getItems(val).then () =>
+        $itemEls = @popoverEl.find '.item'
+        @_afterFilter($itemEls)
+
     try
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
       re = new RegExp '','i'
 
-    $itemEls = @popoverEl.find '.item'
     results = $itemEls.hide().removeClass('selected').filter (i)->
       $el = $(@)
       str = [$el.data('name'),$el.data('pinyin'),$el.data('abbr')].join " "
       return re.test str
+
+    @_afterFilter(results)
+
+  _afterFilter: (results)->
     if results.length
       @popoverEl.show()
       @active = true
@@ -267,6 +320,8 @@ class SimditorMention extends SimpleModule
     else
       @popoverEl.hide()
       @active = false
+
+    @refresh()
 
   _changeFocus: (type)->
     selectedItem = @popoverEl.find '.item.selected'
@@ -279,7 +334,7 @@ class SimditorMention extends SimpleModule
     return false if itemEl.length < 1
     selectedItem.removeClass 'selected'
     itemEl.addClass 'selected'
-    
+
     parentEl = itemEl.parent()
     parentH = parentEl.height()
 
@@ -290,7 +345,6 @@ class SimditorMention extends SimpleModule
       parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length - parentH + itemH )
     if position.top < 0
       parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length )
-
 
   _onKeyDown: (e)->
     return unless @active
@@ -341,23 +395,7 @@ class SimditorMention extends SimpleModule
 
   _onKeyUp: (e)->
     # 过滤快捷键, 以免触发refresh
-    return if !@active or $.inArray(e.which, [9,16,17,27,37,38,39,40]) > -1 or (e.shiftKey and e.which == 50) or (e.ctrlKey and (e.which == 78 or e.which == 80)) 
+    return if !@active or $.inArray(e.which, [9,16,17,27,37,38,39,40]) > -1 or (e.shiftKey and e.which == 50) or (e.ctrlKey and (e.which == 78 or e.which == 80))
     @filterItem()
-    @refresh()
 
 Simditor.connect SimditorMention
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
