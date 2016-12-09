@@ -169,7 +169,7 @@ class SimditorMention extends SimpleModule
     @editor.selection.setRangeAtEndOf @target, range
 
     # Dynamic items need this.active and a keypress before popover gets created
-    return if not @popoverEl?
+    return if not @popoverEl? or @popoverEl.find('.item').length == 0
 
     @popoverEl.find('.item:first')
       .addClass 'selected'
@@ -187,9 +187,6 @@ class SimditorMention extends SimpleModule
 
     top = targetOffset.top - wrapperOffset.top + @target.height() + 2
 
-    if targetOffset.top - $(document).scrollTop() + popoverH > $(window).height()
-      top = targetOffset.top - wrapperOffset.top - popoverH
-
     @popoverEl.css
       top: top
       left: targetOffset.left - wrapperOffset.left + @target.width()
@@ -201,7 +198,9 @@ class SimditorMention extends SimpleModule
       </div>
     ''').appendTo @editor.el
 
-    $itemsEl = @popoverEl.find '.items'
+    $itemsEl = @popoverEl.find('.items')
+    $itemsEl.empty() if @items.length > 0
+
     for item in @items
       name = item[@opts.mention.nameKey]
       pinyin = item[@opts.mention.pinyinKey]
