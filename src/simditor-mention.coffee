@@ -95,6 +95,8 @@ class SimditorMention extends SimpleModule
       return false if @editor.body.find('span.simditor-mention').length > 0
       e.result
 
+    @editor.body.bind 'mousedown touchend', ()=>
+      @editor.focus()
 
     @editor.on 'keydown', (e)=>
       return unless e.which is 229
@@ -226,7 +228,7 @@ class SimditorMention extends SimpleModule
       $(@).addClass 'selected'
         .siblings '.item'
         .removeClass 'selected'
-    @popoverEl.on 'mousedown','.item', (e)=>
+    @popoverEl.on 'mousedown touchend','.item', (e)=>
       @selectItem()
       false
 
@@ -290,7 +292,7 @@ class SimditorMention extends SimpleModule
     # Exists when items are static, or fetched dynamically 2nd or more times
     $itemEls = @popoverEl.find '.item' if @popoverEl?
 
-    if @_isXHREnabled()
+    if @_isXHREnabled() and val.length
       # Only hide items are fetched 2nd or more times
       @popoverEl.hide() if @popoverEl?
       return @getItems(val).then () =>
