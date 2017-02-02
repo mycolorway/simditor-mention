@@ -1,6 +1,6 @@
 {
   "name": "ts-simditor-mention",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0-alpha.2",
   "description": "A Mention plugin for Simditor",
   "main": "lib/simditor-mention.js",
   "repository": {
@@ -22,10 +22,12 @@
     "simditor": "2.3.x"
   },
   "scripts": {
-    "test": "grunt test --verbose"
+    "test": "grunt test --verbose",
+    "build": "grunt coffee umd --verbose"
   },
   "devDependencies": {
     "grunt": "0.x",
+    "grunt-cli": "1.x",
     "grunt-contrib-coffee": "0.x",
     "grunt-contrib-jasmine": "^1.0.3",
     "grunt-contrib-sass": "0.x",
