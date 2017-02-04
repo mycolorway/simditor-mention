@@ -80,6 +80,11 @@ class SimditorMention extends SimpleModule
       @items = if formatter? then formatter result else result
       @_renderPopover()
 
+  updateSelectedItem: (item)->
+    item.addClass 'selected'
+      .siblings '.item'
+      .removeClass 'selected'
+
   _bind: ->
     @editor.on 'decorate', (e,$el)=>
       $el.find('a[data-mention]').each (i,link)=>
@@ -179,6 +184,7 @@ class SimditorMention extends SimpleModule
       .removeClass 'selected'
 
     @popoverEl.show()
+    @popoverEl.find('.items').scrollTop(0)
     @popoverEl.find('.item').show()
     @refresh()
 
@@ -224,17 +230,33 @@ class SimditorMention extends SimpleModule
 
       $itemEl.appendTo($itemsEl).data 'item',item
 
-    @popoverEl.on 'mouseenter', '.item', (e)->
-      $(@).addClass 'selected'
-        .siblings '.item'
-        .removeClass 'selected'
-    @popoverEl.on 'mousedown touchend','.item', (e)=>
+    @popoverEl.on 'mouseenter', '.item', (e)=>
+      @updateSelectedItem($(e.currentTarget))
+
+    @popoverEl.on 'mousedown','.item', (e)=>
       @selectItem()
       false
 
-    $itemsEl.on 'mousewheel', (e,delta)->
-      $(@).scrollTop $(@).scrollTop() - 10*delta
-      false
+    @popoverEl.on 'touchstart', '.item', (e)=>
+      if !@popoverIsTouching
+        @updateSelectedItem($(e.currentTarget))
+        touches = e.originalEvent.targetTouches[0]
+        @popoverStartY = touches.clientY
+        @popoverIsTouching = true
+        @popoverCancelTouch = false
+      undefined
+    @popoverEl.on 'touchmove', '.item', (e)=>
+      if @popoverIsTouching
+        touches = e.originalEvent.targetTouches[0]
+        currentY = touches.clientY
+        @popoverCancelTouch = @popoverCancelTouch || (Math.abs(@popoverStartY - currentY) > 10)
+      undefined
+
+    @popoverEl.on 'touchend', '.item', (e)=>
+      @popoverIsTouching = false;
+      if !@popoverCancelTouch
+        @selectItem()
+      undefined
 
   decorate: ($link)->
     $link.addClass 'simditor-mention'
@@ -246,10 +268,10 @@ class SimditorMention extends SimpleModule
     if @target
       @target.contents().first().unwrap()
       @target = null
-
-    @popoverEl.hide()
-    .find '.item'
-    .removeClass 'selected'
+    if @popoverEl
+      @popoverEl.hide()
+        .find '.item'
+        .removeClass 'selected'
     @active = false
     null
 
@@ -304,16 +326,18 @@ class SimditorMention extends SimpleModule
     catch e
       re = new RegExp '','i'
 
-    results = $itemEls.hide().removeClass('selected').filter (i)->
-      $el = $(@)
-      str = [$el.data('name'),$el.data('pinyin'),$el.data('abbr')].join " "
-      return re.test str
+    if $itemEls
+      results = $itemEls.hide().removeClass('selected').filter (i)->
+        $el = $(@)
+        str = [$el.data('name'),$el.data('pinyin'),$el.data('abbr')].join " "
+        return re.test str
 
     @_afterFilter(results)
 
   _afterFilter: (results)->
     if results.length
       @popoverEl.show()
+      @popoverEl.find('.items').scrollTop(0)
       @active = true
       results.show()
       .first()
