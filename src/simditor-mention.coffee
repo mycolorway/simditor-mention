@@ -78,7 +78,15 @@ class SimditorMention extends SimpleModule
     .done (result)=>
       formatter = @opts.mention.xhrResponseFormat
       @items = if formatter? then formatter result else result
-      @_renderPopover()
+      if @items.length > 0
+        @_renderPopover()
+      else
+        @target = @editor.body.find('span.simditor-mention')
+        text = @target.text()
+        node = document.createTextNode text
+        @target.before(node).remove()
+        @hide()
+        @editor.selection.setRangeAtEndOf node
 
   updateSelectedItem: (item)->
     item.addClass 'selected'
@@ -272,6 +280,7 @@ class SimditorMention extends SimpleModule
       @popoverEl.hide()
         .find '.item'
         .removeClass 'selected'
+      @popoverEl.find('.items').empty()
     @active = false
     null
 
@@ -342,11 +351,10 @@ class SimditorMention extends SimpleModule
       results.show()
       .first()
       .addClass 'selected'
+      @refresh()
     else
       @popoverEl.hide()
       @active = false
-
-    @refresh()
 
   _changeFocus: (type)->
     selectedItem = @popoverEl.find '.item.selected'
@@ -405,18 +413,6 @@ class SimditorMention extends SimpleModule
       @target.replaceWith node
       @hide()
       @editor.selection.setRangeAtEndOf node
-    # space
-    else if e.which is 32
-      text = @target.text()
-      selectedItem = @popoverEl.find '.item.selected'
-      if selectedItem.length and (text.substr(1) is selectedItem.text().trim())
-        @selectItem()
-      else
-        node = document.createTextNode text + '\u00A0'
-        @target.before(node).remove()
-        @hide()
-        @editor.selection.setRangeAtEndOf node
-      return false
 
   _onKeyUp: (e)->
     # 过滤快捷键, 以免触发refresh
