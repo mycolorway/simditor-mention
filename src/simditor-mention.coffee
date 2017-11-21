@@ -240,6 +240,7 @@ class SimditorMention extends SimpleModule
       range = document.createRange()
       @editor.selection.setRangeAtEndOf spaceNode, range
 
+    @editor.sync()
     @hide()
 
   filterItem: ->
