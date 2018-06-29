@@ -47,7 +47,7 @@ module.exports = (grunt) ->
         tasks: ['sass']
       src:
         files: ['src/*.coffee']
-        tasks: ['coffee:src', 'umd', 'jasmine']
+        tasks: ['coffee:src', 'umd']
 
     jasmine:
       test:
@@ -74,5 +74,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'grunt-umd'
 
-  grunt.registerTask 'default', ['sass', 'coffee', 'umd', 'jasmine', 'watch']
+  grunt.registerTask 'default', ['sass', 'coffee', 'umd', 'watch']
   grunt.registerTask 'test', ['sass', 'coffee', 'umd', 'jasmine']

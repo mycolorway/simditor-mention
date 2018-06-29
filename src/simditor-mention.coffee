@@ -119,7 +119,6 @@ class SimditorMention extends SimpleModule
       return if $(e.target).closest('.simditor-mention-popover', @editor.wrapper).length
       @hide()
 
-
   show: ($target)->
     @active = true
     if $target
@@ -202,7 +201,6 @@ class SimditorMention extends SimpleModule
   undecorate: ($link)->
     $link.removeClass 'simditor-mention'
 
-
   hide: ->
     if @target
       @target.contents().first().unwrap()
@@ -213,7 +211,6 @@ class SimditorMention extends SimpleModule
     .removeClass 'selected'
     @active = false
     null
-
 
   selectItem: ->
     $selectedItem = @popoverEl.find '.item.selected'
@@ -248,6 +245,10 @@ class SimditorMention extends SimpleModule
     # 处理输入法占位符号 rime:12288, sougou: 160
     val = val.replace String.fromCharCode(12288), ''
     val = val.replace String.fromCharCode(160), ''
+
+    # 去掉中文输入时，字之间出现的空格
+    val = val.split(' ').join('')
+
     try
       re = new RegExp "(|\\s)#{val}", 'i'
     catch e
@@ -288,7 +289,6 @@ class SimditorMention extends SimpleModule
       parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length - parentH + itemH )
     if position.top < 0
       parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length )
-
 
   _onKeyDown: (e)->
     return unless @active
