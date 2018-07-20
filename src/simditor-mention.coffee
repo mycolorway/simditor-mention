@@ -232,7 +232,7 @@ class SimditorMention extends SimpleModule
     if @target.hasClass 'edit'
       @editor.selection.setRangeAfter $itemLink
     else
-      spaceNode = document.createTextNode '\u00A0'
+      spaceNode = $('<span>&nbsp;</span>')
       $itemLink.after spaceNode
       range = document.createRange()
       @editor.selection.setRangeAtEndOf spaceNode, range
