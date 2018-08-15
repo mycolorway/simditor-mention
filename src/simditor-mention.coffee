@@ -138,6 +138,7 @@ class SimditorMention extends SimpleModule
 
     @popoverEl.show()
     @popoverEl.find('.item').show()
+    @popoverEl.find('.items').scrollTop(0)
     @refresh()
 
   refresh: ->
