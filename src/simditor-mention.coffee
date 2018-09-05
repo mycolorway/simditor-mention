@@ -7,6 +7,20 @@ class SimditorMention extends SimpleModule
 
   active: false
 
+  keys:
+    BACKSPACE: 8
+    TAB: 9
+    ENTER: 13
+    SHIFT: 16
+    CTRL: 17
+    ALT: 18
+    ESC: 27
+    SPACE: 32
+    LEFT: 37
+    UP: 38
+    RIGHT: 39
+    DOWN: 40
+
   _init: ->
     return unless @opts.mention
     @editor = @_module
@@ -37,14 +51,6 @@ class SimditorMention extends SimpleModule
 
     @_bind()
 
-  getItems: ->
-    $.ajax
-      type: 'get'
-      url: @opts.mention.url
-    .done (result)=>
-      @items = result
-      @_renderPopover()
-
   _bind: ->
     @editor.on 'decorate', (e,$el)=>
       $el.find('a[data-mention]').each (i,link)=>
@@ -60,40 +66,8 @@ class SimditorMention extends SimpleModule
       return false if @editor.body.find('span.simditor-mention').length > 0
       e.result
 
-
-    @editor.on 'keydown', (e)=>
-      return unless e.which is 229
-      setTimeout =>
-        range = @editor.selection.range()
-        return unless range? and range.collapsed
-        range = range.cloneRange()
-        range.setStart range.startContainer, Math.max(range.startOffset - 1, 0)
-        if range.toString() is '@' and not @active
-          @editor.trigger $.Event 'keypress', {
-            which: 64
-          }
-      , 50
-
-    @editor.on 'keypress', (e)=>
-      return unless e.which is 64
-
-      $closestBlock = @editor.selection.blockNodes().last()
-      return if $closestBlock.is 'pre'
-
-      setTimeout =>
-        range = @editor.selection.range()
-        return unless range?
-
-        range = range.cloneRange()
-        range.setStart range.startContainer, Math.max(range.startOffset - 2, 0)
-        return if /^[A-Za-z0-9]@/.test range.toString()
-        @show()
-      , 50
-
-    @editor
-      .on('keydown.simditor-mention', $.proxy(@_onKeyDown, this))
-      .on('keyup.simditor-mention', $.proxy(@_onKeyUp, this))
-
+    @editor.on('keydown.simditor-mention', $.proxy(@_onKeyDown, this))
+    @editor.on('keyup.simditor-mention', $.proxy(@_onKeyUp, this))
 
     @editor.on 'blur',=>
       @hide() if @active
@@ -118,42 +92,6 @@ class SimditorMention extends SimpleModule
     @editor.wrapper.on 'mousedown.simditor-mention', (e)=>
       return if $(e.target).closest('.simditor-mention-popover', @editor.wrapper).length
       @hide()
-
-  show: ($target)->
-    @active = true
-    if $target
-      @target = $target
-    else
-      @target = $('<span class="simditor-mention" />')
-      range = @editor.selection.range()
-      range.setStart range.startContainer, range.endOffset - 1
-      range.surroundContents @target[0]
-
-    @editor.selection.setRangeAtEndOf @target, range
-
-    @popoverEl.find('.item:first')
-      .addClass 'selected'
-      .siblings '.item'
-      .removeClass 'selected'
-
-    @popoverEl.show()
-    @popoverEl.find('.item').show()
-    @popoverEl.find('.items').scrollTop(0)
-    @refresh()
-
-  refresh: ->
-    wrapperOffset = @editor.wrapper.offset()
-    targetOffset = @target.offset()
-    popoverH = @popoverEl.height()
-
-    top = targetOffset.top - wrapperOffset.top + @target.height() + 2
-
-    if targetOffset.top - $(document).scrollTop() + popoverH > $(window).height()
-      top = targetOffset.top - wrapperOffset.top - popoverH
-
-    @popoverEl.css
-      top: top
-      left: targetOffset.left - wrapperOffset.left + @target.width()
 
   _renderPopover: ->
     @popoverEl = $('''
@@ -195,6 +133,139 @@ class SimditorMention extends SimpleModule
     $itemsEl.on 'mousewheel', (e,delta)->
       $(@).scrollTop $(@).scrollTop() - 10*delta
       false
+
+  _changeFocus: (type)->
+    selectedItem = @popoverEl.find '.item.selected'
+    if selectedItem.length < 1
+      @popoverEl.find '.item:first' .addClass 'selected'
+      return false
+    itemEl = selectedItem[type + 'All']('.item:visible').first()
+    return false if itemEl.length < 1
+    selectedItem.removeClass 'selected'
+    itemEl.addClass 'selected'
+    
+    parentEl = itemEl.parent()
+    parentH = parentEl.height()
+
+    position = itemEl.position()
+    itemH = itemEl.outerHeight()
+
+    if position.top > parentH - itemH
+      parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length - parentH + itemH )
+    if position.top < 0
+      parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length )
+
+  _onKeyDown: (e)->
+    return unless @active
+
+    switch e.which
+      when @keys.UP, @keys.DOWN, @keys.TAB, @keys.ENTER
+        e.preventDefault()
+
+      when @keys.BACKSPACE
+        if @target.text() is '@' or @target.text() is ''
+          node = document.createTextNode '@'
+          @target.replaceWith node
+          @hide()
+          @editor.selection.setRangeAtEndOf node
+        else
+          @filterItem()
+          @refresh()
+    
+    e.stopPropagation()
+
+  _onKeyUp: (e)->
+    range = @editor.selection.range()
+    return unless range? and range.collapsed
+    range = range.cloneRange()
+    range.setStart range.startContainer, Math.max(range.startOffset - 1, 0)
+
+    if range.toString() is '@' and not @active
+      $closestBlock = @editor.selection.blockNodes().last()
+      return if $closestBlock.is 'pre'
+
+      range = @editor.selection.range()
+      return unless range?
+
+      range = range.cloneRange()
+      range.setStart range.startContainer, Math.max(range.startOffset - 2, 0)
+      return if /^[A-Za-z0-9]@/.test range.toString()
+      @show()
+
+    return unless @active
+
+    switch e.which
+      when @keys.SHIFT, @keys.CTRL, @keys.ALT
+        e.preventDefault()
+
+      when @keys.LEFT, @keys.RIGHT, @keys.ESC
+        @editor.selection.save()
+        @hide()
+        @editor.selection.restore()
+
+      when @keys.UP
+        @_changeFocus('prev')
+        
+      when @keys.DOWN
+        @_changeFocus('next')
+
+      when @keys.TAB, @keys.ENTER
+        selectedItem = @popoverEl.find '.item.selected'
+        if selectedItem.length
+          @selectItem()
+        else
+          node = document.createTextNode @target.text()
+          @target.before(node).remove()
+          @hide()
+          @editor.selection.setRangeAtEndOf node
+
+      else
+        @filterItem()
+        @refresh()
+
+  getItems: ->
+    $.ajax
+      type: 'get'
+      url: @opts.mention.url
+    .done (result)=>
+      @items = result
+      @_renderPopover()
+
+  show: ($target)->
+    @active = true
+    if $target
+      @target = $target
+    else
+      @target = $('<span class="simditor-mention" />')
+      range = @editor.selection.range()
+      range.setStart range.startContainer, range.endOffset - 1
+      range.surroundContents @target[0]
+
+    @editor.selection.setRangeAtEndOf @target, range
+
+    @popoverEl.find('.item:first')
+      .addClass 'selected'
+      .siblings '.item'
+      .removeClass 'selected'
+
+    @popoverEl.show()
+    @popoverEl.find('.item').show()
+    @popoverEl.find('.items').scrollTop(0)
+    @refresh()
+
+  refresh: ->
+    wrapperOffset = @editor.wrapper.offset()
+    targetOffset = @target.offset()
+    popoverH = @popoverEl.height()
+
+    top = targetOffset.top - wrapperOffset.top + @target.height() + 2
+
+    if targetOffset.top - $(document).scrollTop() + popoverH > $(window).height()
+      top = targetOffset.top - wrapperOffset.top - popoverH
+
+    @popoverEl.css
+      top: top
+      left: targetOffset.left - wrapperOffset.left + @target.width()
 
   decorate: ($link)->
     $link.addClass 'simditor-mention'
@@ -262,101 +333,10 @@ class SimditorMention extends SimpleModule
       return re.test str
     if results.length
       @popoverEl.show()
-      @active = true
       results.show()
       .first()
       .addClass 'selected'
     else
       @popoverEl.hide()
-      @active = false
-
-  _changeFocus: (type)->
-    selectedItem = @popoverEl.find '.item.selected'
-    if selectedItem.length < 1
-      @popoverEl.find '.item:first' .addClass 'selected'
-      return false
-    itemEl = selectedItem[type + 'All']('.item:visible').first()
-    return false if itemEl.length < 1
-    selectedItem.removeClass 'selected'
-    itemEl.addClass 'selected'
-    
-    parentEl = itemEl.parent()
-    parentH = parentEl.height()
-
-    position = itemEl.position()
-    itemH = itemEl.outerHeight()
-
-    if position.top > parentH - itemH
-      parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length - parentH + itemH )
-    if position.top < 0
-      parentEl.scrollTop( itemH * itemEl.prevAll('.item:visible').length )
-
-  _onKeyDown: (e)->
-    return unless @active
-
-    # left and right arrow
-    if e.which is 37 or e.which is 39 or e.which is 27
-      @editor.selection.save()
-      @hide()
-      @editor.selection.restore()
-      return false
-    #up and down arrow, ctrl+p and ctrl+n
-    else if e.which is 38 or (e.which is 80 and e.ctrlKey)
-      @_changeFocus('prev')
-      return false
-    else if e.which is 40 or (e.which is 78 and e.ctrlKey)
-      @_changeFocus('next')
-      return false
-
-    #enter or tab to select item
-    else if e.which is 13 or e.which is 9
-      selectedItem = @popoverEl.find '.item.selected'
-      if selectedItem.length
-        @selectItem()
-        return false
-      else
-        node = document.createTextNode @target.text()
-        @target.before(node).remove()
-        @hide()
-        @editor.selection.setRangeAtEndOf node
-    # delete
-    else if e.which is 8 and (@target.text() is '@' or @target.text() is '')
-      node = document.createTextNode '@'
-      @target.replaceWith node
-      @hide()
-      @editor.selection.setRangeAtEndOf node
-    # space
-    else if e.which is 32
-      text = @target.text()
-      selectedItem = @popoverEl.find '.item.selected'
-      if selectedItem.length and (text.substr(1) is selectedItem.text().trim())
-        @selectItem()
-      else
-        node = document.createTextNode text + '\u00A0'
-        @target.before(node).remove()
-        @hide()
-        @editor.selection.setRangeAtEndOf node
-      return false
-
-  _onKeyUp: (e)->
-    # 过滤快捷键, 以免触发refresh
-    return if !@active or $.inArray(e.which, [9,16,17,27,37,38,39,40]) > -1 or (e.shiftKey and e.which == 50) or (e.ctrlKey and (e.which == 78 or e.which == 80)) 
-    @filterItem()
-    @refresh()
 
 Simditor.connect SimditorMention
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

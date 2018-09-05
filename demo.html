@@ -9,6 +9,16 @@
 	<link media="all" rel="stylesheet" type="text/css" href="vendor/bower/simditor/styles/simditor.css" />
 	<link rel="stylesheet" type="text/css" href="styles/simditor-mention.css" />
 
+	<style>
+		.avatar {
+			float: left;
+	    display: block;
+	    width: 30px;
+	    height: 20px;
+	    margin-right: 4px;
+		}
+	</style>
+
 	<script type="text/javascript" src="vendor/bower/jquery/dist/jquery.min.js"></script>
 </head>
 <body>
@@ -28,59 +38,61 @@
 				textarea: $('#txt-content'),
 				placeholder: '这里输入文字...',
 				pasteImage: true,
-				toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent'],
-				defaultImage: 'assets/images/image.png',
-				upload: location.search === '?upload' ? {
-					url: '/upload'
-				} : false,
+				toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'hr', '|', 'indent', 'outdent'],
 				mention:{
 					items:[
 					  {
-					    id:1,
-					    name:"春雨😊✈️",
-					    pinyin:"chunyu",
-					    abbr:"cy",
-					    url:"http://www.example.com"
+					    id: 1,
+					    name: '春雨😊✈️',
+					    pinyin: 'chunyu',
+					    abbr: 'cy',
+					    url: 'http://www.example.com'
 					  },
 					  {
-					    id:2,
-					    name:"夏荷😢",
-					    pinyin:"xiahe",
-					    abbr:"xh",
+					    id: 2,
+					    name: '夏荷😢',
+					    pinyin: 'xiahe',
+					    abbr: 'xh'
 					  },
 					  {
-					    id:3,
-					    name:"秋叶",
-					    pinyin:"qiuye",
-					    abbr:"qy",
+					    id: 3,
+					    name: '秋叶',
+					    pinyin: 'qiuye',
+					    abbr: 'qy'
 					  },
 					  {
-					    id:4,
-					    name:"冬雪",
-					    pinyin:"dongxue",
-					    abbr:"dx",
+					    id: 4,
+					    name: '冬雪',
+					    pinyin: 'dongxue',
+					    abbr: 'dx'
 					  },
 					  {
-					    id:5,
-					    name:"Snow❄️",
-					    pinyin:"snow",
-					    abbr:"snow",
+					    id: 5,
+					    name: 'Snow❄️',
+					    pinyin: 'snow',
+					    abbr: 'Snow'
+					  },
+					  {
+					  	id: 6,
+					  	name: 'Simditor Mention',
+					  	pinyin: 'simditormention',
+					  	abbr: 'simditormention'
 					  }
 					],
-					itemRenderer:function($itemEl,data){
-						$span = $('span',$itemEl)
-						$('<img>').insertBefore($span)
-						return $itemEl
+					itemRenderer:function($itemEl, data) {
+						var $span = $('span', $itemEl);
+						// $('<img>').attr('src', 'https://simditor.tower.im/assets/images/logo.png').addClass('avatar').insertBefore($span);
+						return $itemEl;
 					},
-					linkRenderer:function($linkEl,data){
-						$linkEl.attr('href',"www.example.com/"+data.id);
+					linkRenderer:function($linkEl, data) {
+						$linkEl.attr('href', 'www.example.com/' + data.id);
 					}
 				},
 			});
 
-			$(editor).on("mention",function(e,el,data){
-				color = ( data.id%2==0? 'blue' : 'red' )
-				$(el).css('color',color);
+			$(editor).on('mention', function(e, el, data) {
+				var color = (data.id % 2 === 0 ? 'blue' : 'red');
+				$(el).css('color', color);
 			});
 
 		});
