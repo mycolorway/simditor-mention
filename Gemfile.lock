@@ -1,5 +1,5 @@
 GEM
-  remote: https://rubygems.org/
+  remote: https://gems.ruby-china.com/
   specs:
     sass (3.4.3)
 
@@ -10,4 +10,4 @@ DEPENDENCIES
   sass (>= 3.4.0)
 
 BUNDLED WITH
-   1.15.3
+   1.16.1
