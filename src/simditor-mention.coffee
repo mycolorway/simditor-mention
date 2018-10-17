@@ -49,8 +49,6 @@ class SimditorMention extends SimpleModule
     else
       @getItems()
 
-    @_bind()
-
   _bind: ->
     @editor.on 'decorate', (e,$el)=>
       $el.find('a[data-mention]').each (i,link)=>
@@ -134,6 +132,8 @@ class SimditorMention extends SimpleModule
       $(@).scrollTop $(@).scrollTop() - 10*delta
       false
 
+    @_bind()
+
   _changeFocus: (type)->
     selectedItem = @popoverEl.find '.item.selected'
     if selectedItem.length < 1
@@ -143,7 +143,7 @@ class SimditorMention extends SimpleModule
     return false if itemEl.length < 1
     selectedItem.removeClass 'selected'
     itemEl.addClass 'selected'
-    
+
     parentEl = itemEl.parent()
     parentH = parentEl.height()
 
@@ -171,7 +171,7 @@ class SimditorMention extends SimpleModule
         else
           @filterItem()
           @refresh()
-    
+
     e.stopPropagation()
 
   _onKeyUp: (e)->
@@ -205,7 +205,7 @@ class SimditorMention extends SimpleModule
 
       when @keys.UP
         @_changeFocus('prev')
-        
+
       when @keys.DOWN
         @_changeFocus('next')
 
