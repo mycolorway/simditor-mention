@@ -1,6 +1,6 @@
 {
   "name": "simditor-mention",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A Mention plugin for Simditor",
   "main": "lib/simditor-mention.js",
   "repository": {
@@ -16,7 +16,7 @@
     "url": "https://github.com/mycolorway/simditor-mention/issues"
   },
   "homepage": "https://github.com/mycolorway/simditor-mention",
-  "dependencies": {
+  "peerDependencies": {
     "jquery": "2.x",
     "simditor": "^2.3.x"
   },
