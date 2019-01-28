@@ -1,3 +1,4 @@
-source 'https://gems.ruby-china.com'
+
+source 'https://rubygems.org'
 
 gem 'sass',    '>= 3.4.0'
